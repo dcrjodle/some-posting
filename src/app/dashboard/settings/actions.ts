@@ -13,11 +13,21 @@ export async function savePlatformKeys(formData: FormData) {
 
     const platform = formData.get('platform') as string
     const accessToken = formData.get('accessToken') as string
-    const secretToken = formData.get('secretToken') as string
 
     if (!platform || !accessToken) {
         throw new Error('Missing required fields')
     }
+
+    // Extract all other fields into a JSON string for secret_token
+    const extraData: Record<string, string> = {}
+    formData.forEach((value, key) => {
+        // Skip default fields or empty values
+        if (key !== 'platform' && key !== 'accessToken' && typeof value === 'string' && value.trim() !== '') {
+            extraData[key] = value.trim()
+        }
+    })
+
+    const secretToken = Object.keys(extraData).length > 0 ? JSON.stringify(extraData) : null;
 
     const { error } = await supabase
         .from('platform_keys')

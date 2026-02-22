@@ -48,6 +48,8 @@ export async function createPost(formData: FormData) {
     if (formData.get('platform_instagram') === 'on') platforms.push('Instagram')
     if (formData.get('platform_facebook') === 'on') platforms.push('Facebook')
     if (formData.get('platform_tiktok') === 'on') platforms.push('TikTok')
+    if (formData.get('platform_reddit') === 'on') platforms.push('Reddit')
+    if (formData.get('platform_youtube') === 'on') platforms.push('YouTube')
 
     if (!content) {
         throw new Error('Content is required')

@@ -3,11 +3,114 @@ import { redirect } from 'next/navigation'
 import { savePlatformKeys } from './actions'
 
 const PLATFORMS = [
-  { id: 'x', name: 'X (Twitter)' },
-  { id: 'linkedin', name: 'LinkedIn' },
-  { id: 'instagram', name: 'Instagram' },
-  { id: 'facebook', name: 'Facebook' },
-  { id: 'tiktok', name: 'TikTok' },
+  { 
+    id: 'x', 
+    name: 'X (Twitter)',
+    description: 'Post updates to your X timeline.',
+    instructions: [
+      'Go to the X Developer Portal and create a Project & App.',
+      'Set Up User Authentication (OAuth 2.0).',
+      'Change App permissions to "Read & Write" and set a Callback URI.',
+      'Generate your OAuth 2.0 User Access Token and Refresh Token.'
+    ],
+    fields: [
+      { name: 'clientId', label: 'Client ID', type: 'text' },
+      { name: 'clientSecret', label: 'Client Secret', type: 'password' },
+      { name: 'accessToken', label: 'User Access Token', type: 'password', required: true },
+      { name: 'refreshToken', label: 'Refresh Token', type: 'password' },
+    ]
+  },
+  { 
+    id: 'linkedin', 
+    name: 'LinkedIn',
+    description: 'Share text and links to your professional network.',
+    instructions: [
+      'Create an App on the LinkedIn Developer Portal.',
+      'Request access to the "Share on LinkedIn" product.',
+      'Verify your company page.',
+      'Generate your Access Token using the OAuth 2.0 tools.'
+    ],
+    fields: [
+      { name: 'clientId', label: 'Client ID', type: 'text' },
+      { name: 'clientSecret', label: 'Client Secret', type: 'password' },
+      { name: 'accessToken', label: 'User Access Token', type: 'password', required: true },
+    ]
+  },
+  { 
+    id: 'instagram', 
+    name: 'Instagram',
+    description: 'Publish photos and reels directly to your IG feed.',
+    instructions: [
+      'Link your Instagram Business Account to a Facebook Page.',
+      'Create a Facebook Developer App and add "Instagram API".',
+      'Generate a User Access Token in the Graph API Explorer.',
+      'Extend it to a Long-Lived Access Token.'
+    ],
+    fields: [
+      { name: 'accessToken', label: 'Facebook User Access Token', type: 'password', required: true },
+    ]
+  },
+  { 
+    id: 'facebook', 
+    name: 'Facebook',
+    description: 'Publish posts to your Facebook Page feed.',
+    instructions: [
+      'Ensure you have a Facebook Page where you are an Admin.',
+      'Create a Facebook Developer App.',
+      'Use the Graph API Explorer to generate a Page Access Token with "pages_manage_posts" scope.'
+    ],
+    fields: [
+      { name: 'accessToken', label: 'Page Access Token', type: 'password', required: true },
+    ]
+  },
+  { 
+    id: 'tiktok', 
+    name: 'TikTok',
+    description: 'Directly upload videos to your TikTok account.',
+    instructions: [
+      'Create an App on the TikTok for Developers portal.',
+      'Apply for the "Content Posting API".',
+      'Implement OAuth to get your Access & Refresh tokens for the "video.publish" scope.'
+    ],
+    fields: [
+      { name: 'accessToken', label: 'Access Token', type: 'password', required: true },
+      { name: 'refreshToken', label: 'Refresh Token', type: 'password' },
+    ]
+  },
+  { 
+    id: 'reddit', 
+    name: 'Reddit',
+    description: 'Submit links or text posts to subreddits.',
+    instructions: [
+      'Go to reddit.com/prefs/apps and click "create another app...".',
+      'Select "script" or "web app" and fill in the details.',
+      'Note your Client ID (under the app name) and Client Secret.',
+      'Generate an OAuth access token and refresh token.'
+    ],
+    fields: [
+      { name: 'clientId', label: 'Client ID', type: 'text', required: true },
+      { name: 'clientSecret', label: 'Client Secret', type: 'password', required: true },
+      { name: 'accessToken', label: 'Access Token', type: 'password', required: true },
+      { name: 'subreddit', label: 'Default Subreddit', type: 'text', required: true },
+    ]
+  },
+  { 
+    id: 'youtube', 
+    name: 'YouTube',
+    description: 'Upload video content directly to your channel.',
+    instructions: [
+      'Create a project in the Google Cloud Console.',
+      'Enable the "YouTube Data API v3".',
+      'Set up OAuth 2.0 Credentials (Client ID & Secret).',
+      'Generate a User Access Token with the "youtube.upload" scope.'
+    ],
+    fields: [
+      { name: 'clientId', label: 'Client ID', type: 'text', required: true },
+      { name: 'clientSecret', label: 'Client Secret', type: 'password', required: true },
+      { name: 'accessToken', label: 'Access Token', type: 'password', required: true },
+      { name: 'refreshToken', label: 'Refresh Token', type: 'password' },
+    ]
+  },
 ]
 
 export default async function SettingsPage() {
@@ -90,29 +193,43 @@ export default async function SettingsPage() {
               const isSaved = savedPlatforms.has(platform.id)
               
               return (
-                <form action={savePlatformKeys} key={platform.id} className="grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4 border-b border-black/5 pb-6 last:border-0 last:pb-0">
-                  <label className="font-semibold text-sm flex items-center gap-2">
-                    {platform.name}
-                    {isSaved && <span className="text-green-600 text-xs bg-green-50 px-2 py-0.5 rounded border border-green-200">Connected</span>}
-                  </label>
-                  <div className="flex flex-col gap-2">
+                <form action={savePlatformKeys} key={platform.id} className="flex flex-col gap-4 border-b border-black/5 pb-6 last:border-0 last:pb-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-base flex items-center gap-2">
+                        {platform.name}
+                        {isSaved && <span className="text-green-600 text-xs bg-green-50 px-2 py-0.5 rounded border border-green-200">Connected</span>}
+                      </h3>
+                      <p className="text-xs opacity-60 mt-1 mb-3">{platform.description}</p>
+                      <div className="bg-black/5 rounded-lg p-3 text-xs opacity-80 mb-2">
+                        <strong className="block mb-1">Setup Instructions:</strong>
+                        <ol className="list-decimal pl-4 space-y-1">
+                          {platform.instructions.map((inst, i) => (
+                            <li key={i}>{inst}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3">
                     <input type="hidden" name="platform" value={platform.id} />
-                    <div className="flex gap-4">
-                      <input
-                        name="accessToken"
-                        type="password"
-                        required
-                        className="flex-1 bg-background rounded-xl p-3 border border-black/10 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
-                        placeholder={`${isSaved ? 'Update' : 'Enter'} Access Token`}
-                      />
-                      <input
-                        name="secretToken"
-                        type="password"
-                        className="flex-1 bg-background rounded-xl p-3 border border-black/10 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
-                        placeholder={`${isSaved ? 'Update' : 'Enter'} Secret (Optional)`}
-                      />
-                      <button type="submit" className="bg-black/5 px-6 rounded-xl font-semibold text-sm hover:bg-black/10 transition-colors">
-                        Save
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {platform.fields.map(field => (
+                        <div key={field.name} className="flex flex-col gap-1.5">
+                          <label className="text-xs font-medium opacity-80">{field.label}</label>
+                          <input
+                            name={field.name}
+                            type={field.type}
+                            required={field.required}
+                            className="bg-background rounded-xl p-3 border border-black/10 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm w-full"
+                            placeholder={`${isSaved ? 'Update' : 'Enter'} ${field.label}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-end mt-2">
+                      <button type="submit" className="bg-black/5 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-black/10 transition-colors">
+                        Save {platform.name} Credentials
                       </button>
                     </div>
                   </div>

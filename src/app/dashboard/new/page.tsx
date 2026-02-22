@@ -9,6 +9,8 @@ const PLATFORMS = [
   { id: 'instagram', name: 'Instagram' },
   { id: 'facebook', name: 'Facebook' },
   { id: 'tiktok', name: 'TikTok' },
+  { id: 'reddit', name: 'Reddit' },
+  { id: 'youtube', name: 'YouTube' },
 ]
 
 export default async function NewPostPage() {
